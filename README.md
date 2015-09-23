@@ -33,15 +33,17 @@
 3、安装
 ----
 ####3.1 下载源代码解压
-https://github.com/liuhill/kper2.git
+https://github.com/liuhill/kper-meteor.git
 >###清注意
 当前项目正在开发测试中，完整功能版请移步PHP版本https://github.com/liuhill/i-Pper
 
 
 4、demo
 ----
-####4.1 网址
-http://www.kper.com.cn
+####4.1 demo网址
+http://hillock.meteor.com
+>官网www.kper.com.cn等待上线
+
 
 ####4.2 使用方法
 	1)关注微信公共账号
