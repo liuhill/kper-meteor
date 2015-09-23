@@ -121,6 +121,8 @@ var table = [
   "Uuo", "Ununoctium", "(294)", 18, 7
 ];
 
+imgUrl='http://7xma2z.com1.z0.glb.clouddn.com/';
+
 
 if (Meteor.isClient) {
   // counter starts at 0
@@ -133,16 +135,22 @@ if (Meteor.isClient) {
   //threejs
   /* three */
   $(document).ready(function(){
+    getImgs();
     init();
     animate();
   })
 
 
-    var camera, scene, renderer;
-    var controls;
+  //建议值[18,6]
+  var table = [];
 
-    var objects = [];
-    var targets = { table: [], sphere: [], helix: [], grid: [] };
+  var camera, scene, renderer;
+  var controls;
+  var radius = 100, theta = 0;
+
+  var objects = [];
+  var targets = { table: [], sphere: [], helix: [], grid: [] };
+
 }
 
 if (Meteor.isServer) {
@@ -160,28 +168,24 @@ function init() {
 
   scene = new THREE.Scene();
 
-  // table
 
-  for ( var i = 0; i < table.length; i += 5 ) {
+  for ( var i = 0; i < table.length ; i ++ ) {
 
     var element = document.createElement( 'div' );
     element.className = 'element';
     element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
 
-    var number = document.createElement( 'div' );
-    number.className = 'number';
-    number.textContent = (i/5) + 1;
-    element.appendChild( number );
+    var a = document.createElement('a');
+    a.href =  imgUrl + table[ i ][0];
+    a.setAttribute('data-lightbox','roadtrip');
+    a.setAttribute('title',a.href.substr(a.href.lastIndexOf('/')+1));
+//					a.setAttribute('text-align','center');
 
-    var symbol = document.createElement( 'div' );
-    symbol.className = 'symbol';
-    symbol.textContent = table[ i ];
-    element.appendChild( symbol );
+    var image=new Image();
+    image.src= imgUrl + table[ i ][0];
+    a.appendChild(image)
 
-    var details = document.createElement( 'div' );
-    details.className = 'details';
-    details.innerHTML = table[ i + 1 ] + '<br>' + table[ i + 2 ];
-    element.appendChild( details );
+    element.appendChild( a );
 
     var object = new THREE.CSS3DObject( element );
     object.position.x = Math.random() * 4000 - 2000;
@@ -191,13 +195,15 @@ function init() {
 
     objects.push( object );
 
-    //
-
     var object = new THREE.Object3D();
-    object.position.x = ( table[ i + 3 ] * 140 ) - 1330;
-    object.position.y = - ( table[ i + 4 ] * 180 ) + 990;
-
+    object.position.x = ( table[ i ] [1] * 140 ) - 1330;
+    object.position.y = - ( table[ i ] [2]* 180 ) + 990;
     targets.table.push( object );
+
+    image.addEventListener('load',function(event)
+    {
+      resizeImg(this,120,160);
+    },false);
 
   }
 
@@ -305,8 +311,8 @@ function init() {
 
   }, false );
 
-  transform( targets.table, 2000 );
-
+  transform( targets.table, 5000 );
+  //transform( targets.helix, 2000 );
   //
 
   window.addEventListener( 'resize', onWindowResize, false );
@@ -348,8 +354,6 @@ function onWindowResize() {
 
   renderer.setSize( window.innerWidth, window.innerHeight );
 
-  render();
-
 }
 
 function animate() {
@@ -357,13 +361,81 @@ function animate() {
   requestAnimationFrame( animate );
 
   TWEEN.update();
-
   controls.update();
+  render();
+  //move( -1 );
 
 }
 
 function render() {
+/*
+  theta += 0.1;
+*/
+//				camera.position.x += 1;
+//				camera.position.y += 5;
+//				camera.position.z += 0.1;
+  camera.lookAt( scene.position );
 
   renderer.render( scene, camera );
 
+}
+
+// 说明：用 JavaScript 实现网页图片等比例缩放
+function resizeImg(image,distWidth,distHeight)
+{
+  srcWidth = image.width;
+  srcHeight = image.height;
+  var ratio = 1;
+  if(srcWidth>0 && srcHeight>0)
+  {
+    if(srcWidth/srcHeight>= distWidth/distHeight)
+    {
+      if(srcWidth>distWidth)
+      {
+        ratio = distWidth/srcWidth;
+      }
+    }
+    else
+    {
+      if(srcHeight>distHeight)
+      {
+        ratio = distHeight/srcHeight;
+      }
+    }
+  }
+  var width = srcWidth*ratio;
+  var heigh = srcHeight*ratio;
+
+  image.style.width = width.toString() + 'px';
+  image.style.height = heigh.toString() + 'px';
+
+  if(width < distWidth)
+    image.style.paddingLeft = ((distWidth - width)/2).toString() + 'px';
+
+  if(heigh < distHeight)
+    image.style.paddingTop = ((distHeight - heigh)/2).toString() + 'px';
+}
+
+//获得指定文件夹图片名称列表，同时设置图片的位置
+function getImgs (){
+  var arrfiles = new Array();
+
+  for(var i=896;i<902;i++) {
+    arrfiles.push('hillockIMG_0'+i+'.JPG');
+  }
+  var row =1;
+  var col = 1;
+  for(var i = 0; i < arrfiles.length;i++)
+  {
+    var file = [];
+    file[0] = arrfiles[i];
+    file[1] = col++;
+    file[2] = row;
+    table[i] = file;
+    if(col > 18)
+    {
+      col = 1;
+      row++;
+    }
+  }
 }
